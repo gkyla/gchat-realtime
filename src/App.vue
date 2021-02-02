@@ -1,32 +1,39 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="wrapper" class="flex flex-col h-screen max-h-screen w-screen">
+    <Navbar />
+    <router-view />
   </div>
-  <router-view />
 </template>
 
 <script>
+import Navbar from "./components/Navbar";
 import { realtimeListener } from "./firebase";
 
 export default {
   setup() {
     realtimeListener();
+  },
+  components: {
+    Navbar
   }
 };
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap");
+
+body,
+html {
+  min-height: 100vh;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
+  font-family: "Roboto Condensed", sans-serif;
+  min-height: 100vh;
+  color: white;
 }
 
 #nav a {
