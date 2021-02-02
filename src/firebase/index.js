@@ -4,18 +4,33 @@ import "firebase/firestore";
 import "firebase/analytics";
 import { useStore } from "vuex";
 
-const store = useStore();
+const firebaseConfig = {
+  apiKey: "AIzaSyCqmXDRJvg1BHD5v4HpkoZk_g92mmrEomY",
+  authDomain: "gkychat-realtime-vue.firebaseapp.com",
+  projectId: "gkychat-realtime-vue",
+  storageBucket: "gkychat-realtime-vue.appspot.com",
+  messagingSenderId: "9196215722",
+  appId: "1:9196215722:web:bfcec280a4162b84c95fd3",
+  measurementId: "G-50EMZK5HS3"
+};
+
+firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
 const auth = firebase.auth();
 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-const messagesRef = db.collection("messages");
+const chats = db.collection("chats");
 
 export function realtimeListener() {
+  const store = useStore();
   auth.onAuthStateChanged(user => {
+    console.log("from state user");
+
     store.commit("auth/stateChange", user);
   });
 
-  messagesRef.onSnapshot(snapshot => {
+  chats.orderBy("date", "asc").onSnapshot(snapshot => {
+    console.log("from chat Ref");
     const docs = snapshot.docs.map(doc => {
       const data = doc.data();
       data.id = doc.id;
@@ -31,22 +46,33 @@ export function realtimeListener() {
   });
 }
 
-export function useMessage() {
-  const addChat = async (uid, payload) => {
-    await messagesRef.doc(uid).add({
+export function useChat() {
+  const sendChat = async (uid, payload) => {
+    await chats.doc().set({
+      userUid: uid,
       name: payload.name,
       photoURL: payload.photoURL,
-      date: timestamp
+      date: timestamp,
+      text: payload.text
     });
   };
 
   const deleteChat = async id => {
-    await messagesRef.doc(id).delete();
+    await chats.doc(id).delete();
   };
 
-  return { addChat, deleteChat };
+  return { sendChat, deleteChat };
 }
 
 export function useAuth() {
-  /* Todo : add auth system with google login   */
+  const loginUser = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+  };
+
+  const logoutUser = async () => {
+    await auth.signOut();
+  };
+
+  return { loginUser, logoutUser };
 }
