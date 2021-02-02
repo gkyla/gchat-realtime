@@ -1,5 +1,5 @@
 const auth = {
-  namespace: true,
+  namespaced: true,
   state: {
     loading: null,
     isLogin: null,
@@ -8,7 +8,7 @@ const auth = {
   mutations: {
     stateChange(state, user) {
       state.loading = true;
-
+      state.currentUser = user;
       if (user) {
         state.isLogin = true;
       } else {
