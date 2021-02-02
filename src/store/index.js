@@ -3,14 +3,19 @@ import auth from "./auth";
 
 export default createStore({
   state: {
+    navIsOpened: false,
     isReady: false,
-    allChats: []
+    allChat: []
   },
   mutations: {
     snapshotChat(state, docs) {
       state.isReady = false;
-      state.allChats = docs;
+      state.allChat = docs;
       state.isReady = true;
+    },
+    setNavStatus(state, value) {
+      console.log(value);
+      state.navIsOpened = value;
     }
   },
   actions: {},
